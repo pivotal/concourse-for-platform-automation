@@ -1,0 +1,77 @@
+---
+platform: linux
+image_resource:
+  type: registry-image
+  source:
+    repository: internalpcfplatformautomation/ci
+    tag: testing
+
+inputs:
+  - name: concourse-bosh-deployment
+  - name: packaged-product
+outputs:
+  - name: metadata
+
+run:
+  path: bash
+  args:
+    - -c
+    - |
+      set -eux
+      VERSION=$(bosh int concourse-bosh-deployment/versions.yml --path /concourse_version)
+      DOC_MAJOR_VERSION=$(echo $VERSION | cut -f 1 -d '.' --output-delimiter='')
+      DOC_TAGGED_VERSION=$(echo $VERSION | cut -f 1,2,3 -d '.' --output-delimiter='')
+
+      pushd packaged-product
+      CONCOURSE_VERSION=$(ls concourse-bosh-release*.tgz | grep -Po '(?<=-)[0-9.]+(?=\.)')
+      UAA_VERSION=$(ls uaa*.tgz | grep -Po '(?<=-)[0-9.]+(?=\.)')
+      POSTGRES_VERSION=$(ls postgres*.tgz | grep -Po '(?<=-)[0-9.]+(?=\.)')
+      CREDHUB_VERSION=$(ls credhub*.tgz | grep -Po '(?<=-)[0-9.]+(?=\.)')
+      BPM_VERSION=$(ls bpm*.tgz | grep -Po '(?<=-)[0-9.]+(?=\.)')
+      BBR_VERSION=$(ls backup-and-restore-sdk*.tgz | grep -Po '(?<=-)[0-9.]+(?=\.)')
+      popd
+
+      # TODO: change according to https://github.com/pivotal-cf/pivnet-resource/tree/master/metadata
+      cat >> metadata/metadata.yml <<EOF
+      ---
+      release:
+        version: "$VERSION Platform Automation"
+        release_notes_url: "https://docs.pivotal.io/p-concourse/v${DOC_MAJOR_VERSION}/rn/#v${DOC_TAGGED_VERSION}"
+        description: |
+          Concourse for VMware Tanzu v${VERSION} is a stable and Pivotal supported version of Concourse.
+          Please refer to Release Notes for breaking changes, features and fixes in this release.
+
+          Concourse for VMware Tanzu v${VERSION} supports the 621.* Stemcell family
+        availability: Admins Only
+        #user_group_ids:
+        #  - 6   # Pivotal Internal Early Access
+        #  - 88  # PCF R&D
+        #  - 255 # OSL Early Access
+        #  - 257 # Control Plane for PCF Beta
+        release_type: Beta Release
+        eula_slug: "pivotal_beta_eula"
+        eccn: "EAR99"
+        license_exception: "NLR"
+      product_files:
+      - upload_as: Concourse BOSH Release
+        file: $(ls packaged-product/concourse-bosh-release*.tgz)
+        file_version: "${CONCOURSE_VERSION}"
+      - upload_as: UAA BOSH Release
+        file: $(ls packaged-product/uaa*.tgz)
+        file_version: "${UAA_VERSION}"
+      - upload_as: Postgres BOSH Release
+        file: $(ls packaged-product/postgres*.tgz)
+        file_version: "${POSTGRES_VERSION}"
+      - upload_as: Credhub BOSH Release
+        file: $(ls packaged-product/credhub*.tgz)
+        file_version: "${CREDHUB_VERSION}"
+      - upload_as: BPM BOSH Release
+        file: $(ls packaged-product/bpm*.tgz)
+        file_version: "${BPM_VERSION}"
+      - upload_as: Backup and Restore SDK BOSH Release
+        file: $(ls packaged-product/backup-and-restore-sdk*.tgz)
+        file_version: "${BBR_VERSION}"
+      - upload_as: Concourse BOSH Deployment
+        file: $(ls packaged-product/concourse-bosh-deployment*.tgz)
+        file_version: "${VERSION}"
+      EOF

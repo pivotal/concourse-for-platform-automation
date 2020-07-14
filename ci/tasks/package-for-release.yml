@@ -1,0 +1,23 @@
+---
+platform: linux
+
+inputs:
+  - name: concourse-bosh-deployment
+  - name: releases
+
+outputs:
+  - name: packaged-product
+
+image_resource:
+  type: registry-image
+  source:
+    repository: internalpcfplatformautomation/ci
+    tag: testing
+run:
+  path: bash
+  args:
+    - -c
+    - |
+      version="$(bosh int concourse-bosh-deployment/versions.yml --path /concourse_version)"
+      tar czf packaged-product/concourse-bosh-deployment-"$version".tgz --exclude='.git' -C concourse-bosh-deployment .
+      mv releases/* packaged-product/
