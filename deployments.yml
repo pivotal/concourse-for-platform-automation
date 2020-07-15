@@ -1,0 +1,7 @@
+#@data/values
+---
+deployments:
+- iaas: gcp
+  opsman_glob: "*gcp*.yml"
+  stemcell_glob: "light*google*.tgz"
+  tags: []
