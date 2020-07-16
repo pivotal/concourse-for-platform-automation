@@ -28,7 +28,8 @@ resources:
   type: git
   source:
     uri: https://github.com/concourse/concourse-bosh-deployment
-    branch: release/6.3.x
+    branch: master
+    tag_filter: v*
 
 - name: docs-platform-automation
   type: git
@@ -56,10 +57,6 @@ resources:
     api_token: ((pivnet-token))
     product_slug: stemcells-ubuntu-xenial
     product_version: ^621\..*
-
-- name: lock
-  type: time
-  source: {interval: 999h}
 
 - name: pivnet-rc
   type: pivnet
@@ -125,6 +122,9 @@ jobs:
   serial: true
   plan:
   - in_parallel:
+    - get: concourse-bosh-deployment
+      tags: #@ deployment.tags
+      trigger: true
     - get: opsman-image
       params:
         globs:
@@ -148,10 +148,6 @@ jobs:
       tags: #@ deployment.tags
     - get: docs-platform-automation
       tags: #@ deployment.tags
-    - get: lock
-      tags: #@ deployment.tags
-  - put: lock
-    tags: #@ deployment.tags
   - task: run-terraform
     tags: #@ deployment.tags
     config:
@@ -281,6 +277,11 @@ jobs:
   serial: true
   plan:
   - in_parallel:
+    - get: concourse-bosh-deployment
+      tags: #@ deployment.tags
+      trigger: true
+      passed:
+        - #@ "create-opsman-" + deployment.iaas
     - get: platform-automation-image
       resource: platform-automation
       params:
@@ -289,14 +290,7 @@ jobs:
       tags: #@ deployment.tags
     - get: deployments
       tags: #@ deployment.tags
-    - get: concourse-bosh-deployment
-      tags: #@ deployment.tags
     - get: docs-platform-automation
-      tags: #@ deployment.tags
-    - get: lock
-      trigger: true
-      passed:
-      - #@ "create-opsman-" + deployment.iaas
       tags: #@ deployment.tags
     - get: paving
       tags: #@ deployment.tags
@@ -532,6 +526,11 @@ jobs:
   serial: true
   plan:
   - in_parallel:
+    - get: concourse-bosh-deployment
+      trigger: true
+      tags: #@ deployment.tags
+      passed:
+        - #@ "deploy-and-test-" + deployment.iaas
     - get: repo
     - get: deployments
       tags: #@ deployment.tags
@@ -542,11 +541,6 @@ jobs:
         globs: ["*.tgz"]
       tags: #@ deployment.tags
     - get: docs-platform-automation
-      tags: #@ deployment.tags
-    - get: lock
-      passed:
-      - #@ "deploy-and-test-" + deployment.iaas
-      trigger: true
       tags: #@ deployment.tags
     - get: platform-automation-tasks
       resource: platform-automation
