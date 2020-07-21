@@ -1,0 +1,24 @@
+platform: linux
+
+inputs:
+- name: deployments
+- name: env
+
+params:
+  IAAS:
+
+run:
+  path: bash
+  args:
+    - -c
+    - |
+      #!/usr/bin/env bash
+      set -eu
+
+      om interpolate \
+       -c deployments/cpa-"$IAAS"/terraform-outputs.yml \
+       --path /ops_manager_ssh_private_key > /tmp/private_key
+
+      eval "$(om --env env/env.yml bosh-env --ssh-private-key=/tmp/private_key)"
+
+      bosh -n -d concourse delete-deployment
