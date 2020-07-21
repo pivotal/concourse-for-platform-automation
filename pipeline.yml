@@ -311,8 +311,6 @@ jobs:
         - name: docs-platform-automation
       outputs:
         - name: releases
-      caches:
-        - path: releases
       platform: linux
       run:
         path: bash
