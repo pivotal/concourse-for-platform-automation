@@ -606,6 +606,7 @@ jobs:
         params:
           DEPLOYMENT: #@ "cpa-" + deployment.iaas
           IAAS: #@ deployment.iaas
+          TF_VAR_service_account_key: ((gcp-service-account-key))
         run:
           path: bash
           args:
