@@ -518,7 +518,7 @@ jobs:
           echo "Did not find expected output of 'Hello, World'. Instead saw:"
           echo "${output}"
           exit 1
-- name: #@ "☢delete-" + deployment.iaas + "☢"
+- name: #@ "delete-" + deployment.iaas
   serial_groups:
   - #@ "install-" + deployment.iaas
   serial: true
