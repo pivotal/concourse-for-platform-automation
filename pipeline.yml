@@ -530,6 +530,7 @@ jobs:
       passed:
         - #@ "deploy-and-test-" + deployment.iaas
     - get: repo
+      tags: #@ deployment.tags
     - get: deployments
       tags: #@ deployment.tags
     - get: platform-automation-image
@@ -553,7 +554,7 @@ jobs:
       task: delete-deployment
       tags: #@ deployment.tags
       image: platform-automation-image
-      file: ci/cpa/delete-deployment/task.yml
+      file: repo/ci/tasks/delete-deployment.yml
       params:
         IAAS: #@ deployment.iaas
         OM_TARGET: #@ "opsmanager.cpa-" + deployment.iaas + "." + deployment.iaas + ".platform-automation.cf-app.com"
