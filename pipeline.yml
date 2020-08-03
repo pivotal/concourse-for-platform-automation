@@ -1,4 +1,5 @@
 #@ load("@ytt:data", "data")
+#@ load("@ytt:template", "template")
 ---
 resource_types:
 - name: pivnet
@@ -65,6 +66,16 @@ resources:
     product_slug: p-concourse
     product_version: \d+\.\d+\.\d+\.*
 
+#@ def iaas_terraform_vars(iaas):
+  #@ if iaas == "gcp":
+  TF_VAR_service_account_key: ((gcp-service-account-key))
+  #@ end
+  #@ if iaas == "aws":
+  TF_VAR_secret_key: ((aws-secret-key))
+  TF_VAR_access_key: ((aws-access-key))
+  #@ end
+#@ end
+
 #@ def generate_config(deployment):
 task: generate-config
 tags: #@ deployment.tags
@@ -115,7 +126,7 @@ config:
 #@ end
 
 jobs:
-#@ for/end deployment in data.values.deployments:
+#@ for deployment in data.values.deployments:
 - name: #@ "create-opsman-" + deployment.iaas
   serial_groups:
   - #@ "install-" + deployment.iaas
@@ -166,9 +177,7 @@ jobs:
       params:
         DEPLOYMENT: #@ "cpa-" + deployment.iaas
         IAAS: #@ deployment.iaas
-        #@ if deployment.iaas == "gcp":
-        TF_VAR_service_account_key: ((gcp-service-account-key))
-        #@ end
+        _: #@ template.replace(iaas_terraform_vars(deployment.iaas))
       run:
         path: bash
         args:
@@ -608,9 +617,7 @@ jobs:
         params:
           DEPLOYMENT: #@ "cpa-" + deployment.iaas
           IAAS: #@ deployment.iaas
-          #@ if deployment.iaas == "gcp":
-          TF_VAR_service_account_key: ((gcp-service-account-key))
-          #@ end
+          _: #@ template.replace(iaas_terraform_vars(deployment.iaas))
         run:
           path: bash
           args:
@@ -663,6 +670,7 @@ jobs:
       params:
         rebase: true
         repository: deployments
+#@ end
 - name: release-to-pivnet
   serial: true
   plan:
