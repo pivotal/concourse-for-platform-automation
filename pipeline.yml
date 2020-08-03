@@ -41,7 +41,7 @@ resources:
   source:
     branch: master
     private_key: ((concourse_bot_private_key))
-    uri: git@github.com:concourse/platform-automation-deployments.git
+    uri: #@ data.values.deployments_uri
 
 - name: opsman-image
   type: pivnet

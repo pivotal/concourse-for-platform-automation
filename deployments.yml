@@ -1,5 +1,6 @@
 #@data/values
 ---
+deployments_uri: git@github.com:concourse/platform-automation-deployments.git
 deployments:
 - iaas: gcp
   opsman_glob: "*gcp*.yml"
