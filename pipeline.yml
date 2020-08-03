@@ -653,16 +653,6 @@ jobs:
         rebase: true
         repository: deployments
       tags: #@ deployment.tags
-#!  - task: leftovers
-#!    tags: #@ deployment.tags
-#!    attempts: 5
-#!    file: repo/ci/tasks/leftovers.yml
-#!    params:
-#!      BBL_IAAS: #@ deployment.iaas
-#!      BBL_GCP_SERVICE_ACCOUNT_KEY: ((gcp-service-account-key))
-#!      FILTER: #@ "cpa-" + deployment.iaas
-#!      DRY_RUN: false
-#!      NO_CONFIRM: true
   - task: remove state files
     tags: #@ deployment.tags
     file: repo/ci/tasks/delete-state-file.yml
