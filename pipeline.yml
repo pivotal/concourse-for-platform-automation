@@ -166,7 +166,9 @@ jobs:
       params:
         DEPLOYMENT: #@ "cpa-" + deployment.iaas
         IAAS: #@ deployment.iaas
+        #@ if deployment.iaas == "gcp":
         TF_VAR_service_account_key: ((gcp-service-account-key))
+        #@ end
       run:
         path: bash
         args:
@@ -606,7 +608,9 @@ jobs:
         params:
           DEPLOYMENT: #@ "cpa-" + deployment.iaas
           IAAS: #@ deployment.iaas
+          #@ if deployment.iaas == "gcp":
           TF_VAR_service_account_key: ((gcp-service-account-key))
+          #@ end
         run:
           path: bash
           args:
