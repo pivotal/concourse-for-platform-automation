@@ -74,6 +74,16 @@ resources:
   TF_VAR_secret_key: ((aws-secret-key))
   TF_VAR_access_key: ((aws-access-key))
   #@ end
+  #@ if iaas == "azure":
+  TF_VAR_client_id: ((azure-client-id))
+  TF_VAR_client_secret: ((azure-client-secret))
+  TF_VAR_tenant_id: ((azure-tenant-id))
+  TF_VAR_subscription_id: ((azure-subscription-id))
+  #@ end
+  #@ if iaas == "nsxt":
+  TF_VAR_nsxt_username: ((nsxt-username))
+  TF_VAR_nsxt_password: ((nsxt-password))
+  #@ end
 #@ end
 
 #@ def generate_config(deployment):
