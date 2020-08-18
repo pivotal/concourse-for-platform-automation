@@ -40,7 +40,7 @@ resources:
 - name: deployments
   type: git
   source:
-    branch: master
+    branch: #@ data.values.deployments_branch
     private_key: ((concourse_bot_private_key))
     uri: #@ data.values.deployments_uri
 
@@ -220,6 +220,8 @@ jobs:
           mkdir paving-${IAAS}
           cp -a paving/$IAAS/. paving-$IAAS
           cd paving-${IAAS}
+          rm -f pas-*.tf
+          rm -f pks-*.tf
           # code_snippet cpa-copy-terraform end bash
 
           cp ../docs-platform-automation/docs/examples/cpa/terraform-templates/${IAAS}.tf $terraform_path
@@ -248,7 +250,7 @@ jobs:
           # code_snippet cpa-terraform-apply end bash
 
           # code_snippet cpa-terraform-vars start bash
-          terraform output stable_config > ../terraform-outputs.yml
+          terraform output stable_config_opsmanager > ../terraform-outputs.yml
           # code_snippet cpa-terraform-vars end bash
 
           # code_snippet cpa-terraform-concourse-url start bash
