@@ -29,7 +29,7 @@ resources:
   type: git
   source:
     uri: https://github.com/concourse/concourse-bosh-deployment
-    branch: release/6.3.x
+    branch: master
     tag_filter: v*
 
 - name: docs-platform-automation
