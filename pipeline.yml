@@ -32,11 +32,6 @@ resources:
     branch: master
     tag_filter: v*
 
-- name: docs-platform-automation
-  type: git
-  source:
-    uri: https://github.com/pivotal/docs-platform-automation
-
 - name: deployments
   type: git
   source:
@@ -99,7 +94,7 @@ config:
   inputs:
     - name: deployments
     - name: paving
-    - name: docs-platform-automation
+    - name: repo
   outputs:
     - name: config
     - name: env
@@ -122,7 +117,7 @@ config:
         cp deployments/"$DEPLOYMENT"/state.yml state/ || true
 
         bosh int -l "$output_path" paving/ci/configuration/"$IAAS"/ops-manager.yml > config/opsman.yml
-        cat docs-platform-automation/docs/examples/cpa/vm-extensions/"$IAAS".yml >> paving/ci/configuration/"$IAAS"/director.yml
+        cat repo/vm-extensions/"$IAAS".yml >> paving/ci/configuration/"$IAAS"/director.yml
         bosh int -l "$output_path" paving/ci/configuration/"$IAAS"/director.yml > config/director.yml
         bosh int -l "$output_path" paving/ci/configuration/env.yml \
           -v om_password="$OM_PASSWORD" \
@@ -167,7 +162,7 @@ jobs:
       tags: #@ deployment.tags
     - get: deployments
       tags: #@ deployment.tags
-    - get: docs-platform-automation
+    - get: repo
       tags: #@ deployment.tags
   - task: run-terraform
     tags: #@ deployment.tags
@@ -181,7 +176,7 @@ jobs:
       inputs:
       - name: paving
       - name: deployments
-      - name: docs-platform-automation
+      - name: repo
       outputs:
       - name: deployments
       params:
@@ -224,7 +219,7 @@ jobs:
           rm -f pks-*.tf
           # code_snippet cpa-copy-terraform end bash
 
-          cp ../docs-platform-automation/docs/examples/cpa/terraform-templates/${IAAS}.tf $terraform_path
+          cp ../repo/terraform-templates/${IAAS}.tf $terraform_path
           cp $deployment_path/terraform.tfstate $terraform_path || true
           cp $deployment_path/terraform.tfvars $terraform_path
 
@@ -313,8 +308,6 @@ jobs:
       tags: #@ deployment.tags
     - get: deployments
       tags: #@ deployment.tags
-    - get: docs-platform-automation
-      tags: #@ deployment.tags
     - get: paving
       tags: #@ deployment.tags
     - get: ubuntu-xenial-stemcell
@@ -322,6 +315,9 @@ jobs:
         globs:
         - #@ deployment.stemcell_glob
       tags: #@ deployment.tags
+    - get: repo
+      tags: #@ deployment.tags
+
   - #@ generate_config(deployment)
 
   - &download-bosh-releases
@@ -331,7 +327,6 @@ jobs:
     config:
       inputs:
         - name: concourse-bosh-deployment
-        - name: docs-platform-automation
       outputs:
         - name: releases
       platform: linux
@@ -368,7 +363,7 @@ jobs:
       - name: ubuntu-xenial-stemcell
       - name: config
       - name: concourse-bosh-deployment
-      - name: docs-platform-automation
+      - name: repo
       platform: linux
       run:
         path: bash
@@ -388,8 +383,8 @@ jobs:
           mv releases/credhub-release*.tgz credhub-release.tgz
           mv releases/uaa-release*.tgz uaa-release.tgz
           mv ubuntu-xenial-stemcell/*.tgz stemcell.tgz
-          mv docs-platform-automation/docs/examples/cpa/ops-files/"$IAAS".yml operations.yml
-          mv docs-platform-automation/docs/examples/cpa/test-pipeline.yml pipeline.yml
+          mv repo/ops-files/"$IAAS".yml operations.yml
+          mv repo/test-pipeline.yml pipeline.yml
 
           # code_snippet cpa-write-private-key start bash
           om interpolate \
@@ -446,7 +441,7 @@ jobs:
           # code_snippet cpa-upload-stemcell end bash
 
 
-          cat docs-platform-automation/docs/examples/cpa/vars/"$IAAS".yml | envsubst > vars.yml
+          cat repo/vars/"$IAAS".yml | envsubst > vars.yml
 
           # code_snippet create-user start bash
           export ADMIN_USERNAME=admin
@@ -562,8 +557,6 @@ jobs:
         unpack: true
         globs: ["*.tgz"]
       tags: #@ deployment.tags
-    - get: docs-platform-automation
-      tags: #@ deployment.tags
     - get: platform-automation-tasks
       resource: platform-automation
       params:
@@ -623,7 +616,7 @@ jobs:
         inputs:
         - name: paving
         - name: deployments
-        - name: docs-platform-automation
+        - name: repo
         outputs:
         - name: deployments
         params:
@@ -654,7 +647,7 @@ jobs:
             trap commit EXIT
 
             cp -ra paving/$IAAS paving-$IAAS
-            cp docs-platform-automation/docs/examples/cpa/terraform-templates/"$IAAS".tf $terraform_path
+            cp repo/terraform-templates/"$IAAS".tf $terraform_path
             cp $deployment_path/terraform.tfstate $terraform_path
             cp $deployment_path/terraform.tfvars $terraform_path
 
@@ -688,10 +681,6 @@ jobs:
   plan:
     - in_parallel:
       - get: concourse-bosh-deployment
-        passed:
-          #@ for/end deployment in data.values.deployments:
-          - #@ "deploy-and-test-" + deployment.iaas
-      - get: docs-platform-automation
         passed:
           #@ for/end deployment in data.values.deployments:
           - #@ "deploy-and-test-" + deployment.iaas
