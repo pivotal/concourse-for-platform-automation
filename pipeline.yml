@@ -184,7 +184,7 @@ jobs:
         IAAS: #@ deployment.iaas
         _: #@ template.replace(iaas_terraform_vars(deployment.iaas))
       run:
-        path: bash
+        path: sh
         args:
         - -c
         - |
@@ -195,7 +195,8 @@ jobs:
 
           commit() {
             cp $terraform_path/terraform.tfstate $deployment_path
-            pushd $deployment_path
+            CWD=$(pwd)
+            cd $deployment_path
               git config --global user.name "platform-automation-ci"
               git config --global user.email "pcf-platform-automation@pivotal.io"
               git add terraform.tfstate
@@ -205,7 +206,7 @@ jobs:
               git add terraform-outputs.yml || true
               git add concourse-url.txt || true
               git commit -m "created a new deployment to test $IAAS" || true
-            popd
+            cd $CWD
           }
 
           trap commit EXIT
@@ -612,7 +613,7 @@ jobs:
           type: registry-image
           source:
             repository: hashicorp/terraform
-            tag: full
+            tag: latest
         inputs:
         - name: paving
         - name: deployments
@@ -624,7 +625,7 @@ jobs:
           IAAS: #@ deployment.iaas
           _: #@ template.replace(iaas_terraform_vars(deployment.iaas))
         run:
-          path: bash
+          path: sh
           args:
           - -c
           - |
@@ -635,13 +636,14 @@ jobs:
 
             commit() {
               cp $terraform_path/terraform.tfstate $deployment_path
-              pushd $deployment_path
+              CWD=$(pwd)
+              cd $deployment_path
                 git config --global user.name "platform-automation-ci"
                 git config --global user.email "platform-automation@pivotal.io"
                 git add terraform.tfstate
 
                 git commit -m "deleted infrastructure for $IAAS" || true
-              popd
+              cd $CWD
             }
 
             trap commit EXIT
@@ -652,13 +654,14 @@ jobs:
             cp $deployment_path/terraform.tfvars $terraform_path
 
             cp -ra paving/$IAAS paving-$IAAS
-            pushd paving-$IAAS
+            CWD=$(pwd)
+            cd  paving-$IAAS
               terraform init
               terraform destroy \
                 -auto-approve \
                 -var-file=terraform.tfvars \
                 -state=terraform.tfstate
-            popd
+            cd $CWD
     ensure:
       put: deployments
       params:
