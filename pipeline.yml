@@ -172,7 +172,7 @@ jobs:
         type: registry-image
         source:
           repository: hashicorp/terraform
-          tag: latest
+          tag: 0.14.5
       inputs:
       - name: paving
       - name: deployments
@@ -246,14 +246,14 @@ jobs:
           # code_snippet cpa-terraform-apply end bash
 
           # code_snippet cpa-terraform-vars start bash
-          terraform output stable_config_opsmanager > ../terraform-outputs.yml
+          terraform output --raw stable_config_opsmanager > ../terraform-outputs.yml
           # code_snippet cpa-terraform-vars end bash
 
           # code_snippet cpa-terraform-concourse-url start bash
           export CONCOURSE_URL="$(terraform output concourse_url)"
           # code_snippet cpa-terraform-concourse-url end bash
 
-          terraform output concourse_url > concourse-url.txt
+          terraform output --raw concourse_url > concourse-url.txt
 
     ensure:
       put: deployments
@@ -613,7 +613,7 @@ jobs:
           type: registry-image
           source:
             repository: hashicorp/terraform
-            tag: latest
+            tag: 0.14.5
         inputs:
         - name: paving
         - name: deployments
