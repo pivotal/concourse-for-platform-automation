@@ -172,7 +172,7 @@ jobs:
         type: registry-image
         source:
           repository: hashicorp/terraform
-          tag: full
+          tag: latest
       inputs:
       - name: paving
       - name: deployments
