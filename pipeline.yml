@@ -668,7 +668,7 @@ jobs:
         rebase: true
         repository: deployments
       tags: #@ deployment.tags
-  - task: remove state files
+  - task: remove-state-files
     tags: #@ deployment.tags
     file: repo/ci/tasks/delete-state-file.yml
     params:
