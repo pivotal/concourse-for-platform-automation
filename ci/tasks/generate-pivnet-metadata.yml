@@ -50,8 +50,8 @@ run:
         #  - 257 # Control Plane for PCF Beta
         release_type: Major Release
         eula_slug: "vmware_eula"
-        eccn: "5D002"
-        license_exception: "ECN"
+        eccn: "EAR99"
+        license_exception: "NLR"
       product_files:
       - upload_as: Concourse BOSH Release
         file: $(ls packaged-product/concourse-bosh-release*.tgz)
