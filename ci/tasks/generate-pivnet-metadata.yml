@@ -48,10 +48,10 @@ run:
         #  - 88  # PCF R&D
         #  - 255 # OSL Early Access
         #  - 257 # Control Plane for PCF Beta
-        release_type: Beta Release
-        eula_slug: "pivotal_beta_eula"
-        eccn: "EAR99"
-        license_exception: "NLR"
+        release_type: Major Release
+        eula_slug: "vmware_eula"
+        eccn: "5D002"
+        license_exception: "ECN"
       product_files:
       - upload_as: Concourse BOSH Release
         file: $(ls packaged-product/concourse-bosh-release*.tgz)
