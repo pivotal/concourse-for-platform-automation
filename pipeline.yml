@@ -338,6 +338,10 @@ jobs:
         - |
           set -eux
 
+          # at some point /sbin was removed from PATH, which breaks apt-get since it relies on
+          # /sbin/ldconfig and /sbin/start-stop-daemon
+          export PATH=/usr/local/sbin:/usr/sbin:/sbin:$PATH
+
           apt-get -y install wget
 
           bosh interpolate concourse-bosh-deployment/cluster/concourse.yml \
