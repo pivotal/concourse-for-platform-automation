@@ -550,6 +550,8 @@ jobs:
     - get: concourse-bosh-deployment
       trigger: true
       tags: #@ deployment.tags
+      passed:
+        - #@ "deploy-and-test-" + deployment.iaas
     - get: repo
       tags: #@ deployment.tags
     - get: deployments
