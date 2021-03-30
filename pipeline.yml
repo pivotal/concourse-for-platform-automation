@@ -29,7 +29,7 @@ resources:
   type: git
   source:
     uri: https://github.com/concourse/concourse-bosh-deployment
-    branch: master
+    branch: #@ data.values.concourse_release_branch
     tag_filter: v*
 
 - name: deployments
