@@ -1,7 +1,7 @@
 #@data/values
 ---
 concourse_release_branch: release/6.7.x
-deployments_uri: git@github.com:concourse/platform-automation-deployments.git
+deployments_uri: git@gitlab.eng.vmware.com:concourse/platform-automation-deployments.git
 deployments_branch: master
 deployments:
 - iaas: gcp
