@@ -474,7 +474,7 @@ jobs:
             -o concourse-bosh-deployment/cluster/operations/secure-internal-postgres-bbr.yml \
             -o concourse-bosh-deployment/cluster/operations/secure-internal-postgres-uaa.yml \
             -o concourse-bosh-deployment/cluster/operations/secure-internal-postgres-credhub.yml \
-            -o repo/opes-files/credhub-on-port-80.yml
+            -o repo/ops-files/credhub-on-port-80.yml \
             -o operations.yml \
             -l <(om interpolate --config vars.yml --vars-file terraform-outputs.yml) \
             -l concourse-bosh-deployment/versions.yml
