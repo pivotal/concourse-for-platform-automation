@@ -15,7 +15,7 @@ resource "google_compute_address" "concourse" {
 
 resource "google_compute_firewall" "concourse" {
   allow {
-    ports    = ["443", "2222", "8844", "8443"]
+    ports    = ["80", "443", "2222", "8443"]
     protocol = "tcp"
   }
 
@@ -30,7 +30,7 @@ resource "google_compute_forwarding_rule" "concourse_credhub" {
   ip_address  = google_compute_address.concourse.address
   ip_protocol = "TCP"
   name        = "${var.environment_name}-concourse-credhub"
-  port_range  = "8844-8844"
+  port_range  = "80-80"
   target      = google_compute_target_pool.concourse_target_pool.self_link
 }
 
