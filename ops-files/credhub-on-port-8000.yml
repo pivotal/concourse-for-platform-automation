@@ -1,9 +1,9 @@
 ---
 - type: replace
   path: /instance_groups/name=web/jobs/name=credhub/properties/credhub/port
-  value: 80
+  value: 8000
 
 - path: /instance_groups/name=web/jobs/name=web/properties/credhub?
   type: replace
   value:
-    url: ((external_url)):80
+    url: ((external_url)):8000

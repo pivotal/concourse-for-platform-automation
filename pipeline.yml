@@ -474,7 +474,7 @@ jobs:
             -o concourse-bosh-deployment/cluster/operations/secure-internal-postgres-bbr.yml \
             -o concourse-bosh-deployment/cluster/operations/secure-internal-postgres-uaa.yml \
             -o concourse-bosh-deployment/cluster/operations/secure-internal-postgres-credhub.yml \
-            -o repo/ops-files/credhub-on-port-80.yml \
+            -o repo/ops-files/credhub-on-port-8000.yml \
             -o operations.yml \
             -l <(om interpolate --config vars.yml --vars-file terraform-outputs.yml) \
             -l concourse-bosh-deployment/versions.yml
@@ -491,7 +491,7 @@ jobs:
 
           # code_snippet cpa-credhub-login start bash
           credhub login \
-            --server "https://${CONCOURSE_URL}:80" \
+            --server "https://${CONCOURSE_URL}:8000" \
             --client-name=credhub_admin \
             --client-secret="${CONCOURSE_CREDHUB_SECRET}" \
             --ca-cert "${CONCOURSE_CA_CERT}"
