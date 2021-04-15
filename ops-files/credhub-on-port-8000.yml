@@ -3,7 +3,6 @@
   path: /instance_groups/name=web/jobs/name=credhub/properties/credhub/port
   value: 8000
 
-- path: /instance_groups/name=web/jobs/name=web/properties/credhub?
+- path: /instance_groups/name=web/jobs/name=web/properties/credhub/url
   type: replace
-  value:
-    url: ((external_url)):8000
+  value: ((external_url)):8000
