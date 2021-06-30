@@ -1,3 +1,5 @@
+# concourse for platform automation (deprecated in favor of https://gitlab.eng.vmware.com/concourse/concourse-for-platform-automation)
+
 # Setting the pipeline
 
 The `pipeline.yml` use YTT.
